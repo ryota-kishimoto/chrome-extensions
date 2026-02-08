@@ -1,0 +1,15 @@
+{
+	"name": "uncheck-viewed",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Uncheck all Viewed files on GitHub PR Files Changed tab",
+	"scripts": {
+		"dev": "wxt",
+		"build": "wxt build",
+		"postinstall": "wxt prepare"
+	},
+	"devDependencies": {
+		"typescript": "^5.7.0",
+		"wxt": "^0.19.0"
+	}
+}
