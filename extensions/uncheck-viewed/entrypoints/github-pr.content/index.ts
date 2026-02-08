@@ -54,6 +54,8 @@ export default defineContentScript({
 					await new Promise((r) => setTimeout(r, 150));
 				}
 
+				window.scrollTo({ top: 0, behavior: "instant" });
+
 				const finalCount = findViewedButtons().length;
 				button.textContent =
 					finalCount === 0
