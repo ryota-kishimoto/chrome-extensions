@@ -70,12 +70,12 @@ export default defineContentScript({
 		function insertButton() {
 			if (document.getElementById(BUTTON_ID)) return;
 
-			// Find the sticky toolbar in the Files changed tab
-			const toolbar = document.querySelector<HTMLElement>(
-				'section[class*="toolbar"]',
+			// Insert before the "X/Y viewed" progress indicator
+			const viewedProgress = document.querySelector<HTMLElement>(
+				'[class*="ViewedFileProgress-module__ProgressContainer"]',
 			);
 
-			if (!toolbar) return;
+			if (!viewedProgress) return;
 
 			const btn = document.createElement("button");
 			btn.id = BUTTON_ID;
@@ -84,7 +84,7 @@ export default defineContentScript({
 			btn.textContent = "Uncheck All Viewed";
 			btn.addEventListener("click", uncheckAllViewed);
 
-			toolbar.prepend(btn);
+			viewedProgress.insertAdjacentElement("afterend", btn);
 		}
 
 		// Initial insertion
