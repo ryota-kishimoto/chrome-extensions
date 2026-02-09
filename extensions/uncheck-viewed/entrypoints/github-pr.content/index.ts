@@ -2,7 +2,6 @@ import "./style.css";
 
 const BUTTON_ID = "uncheck-viewed-btn";
 const BUTTON_LABEL = "Uncheck All Viewed";
-const PR_FILES_PATTERN = /\/pull\/\d+\/(files|changes)/;
 
 function sleep(ms: number): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, ms));
@@ -73,11 +72,7 @@ export default defineContentScript({
 	main(ctx) {
 		insertButton();
 
-		const observer = new MutationObserver(() => {
-			if (PR_FILES_PATTERN.test(window.location.pathname) && !getButton()) {
-				insertButton();
-			}
-		});
+		const observer = new MutationObserver(insertButton);
 
 		observer.observe(document.body, { childList: true, subtree: true });
 		ctx.onInvalidated(() => observer.disconnect());
