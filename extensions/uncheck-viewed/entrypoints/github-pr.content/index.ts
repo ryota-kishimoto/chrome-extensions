@@ -1,21 +1,20 @@
 import {
 	createUncheckButton,
-	findCheckedViewedButtons,
+	findUncheckButton,
+	findViewedButtons,
 	findViewedProgress,
-	getUncheckButton,
 	getViewedCount,
 } from "./dom";
 import "./style.css";
 
-const BUTTON_ID = "uncheck-viewed-btn";
 const BUTTON_LABEL = "Uncheck All Viewed";
 
-function sleep(ms: number): Promise<void> {
+function delay(ms: number): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function uncheckAllViewed(): Promise<void> {
-	const button = getUncheckButton(BUTTON_ID);
+	const button = findUncheckButton();
 	if (!button) return;
 
 	button.textContent = "Unchecking...";
@@ -25,10 +24,10 @@ async function uncheckAllViewed(): Promise<void> {
 	for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
 		if (getViewedCount() === 0) break;
 
-		for (const el of findCheckedViewedButtons()) {
+		for (const el of findViewedButtons()) {
 			el.click();
 		}
-		await sleep(200);
+		await delay(200);
 	}
 
 	button.textContent = BUTTON_LABEL;
@@ -36,12 +35,12 @@ async function uncheckAllViewed(): Promise<void> {
 }
 
 function insertButton(): void {
-	if (getUncheckButton(BUTTON_ID)) return;
+	if (findUncheckButton()) return;
 
 	const viewedProgress = findViewedProgress();
 	if (!viewedProgress) return;
 
-	const btn = createUncheckButton(BUTTON_ID, BUTTON_LABEL, uncheckAllViewed);
+	const btn = createUncheckButton(BUTTON_LABEL, uncheckAllViewed);
 	viewedProgress.insertAdjacentElement("afterend", btn);
 }
 
@@ -56,7 +55,6 @@ export default defineContentScript({
 		insertButton();
 
 		const observer = new MutationObserver(insertButton);
-
 		observer.observe(document.body, { childList: true, subtree: true });
 		ctx.onInvalidated(() => observer.disconnect());
 	},

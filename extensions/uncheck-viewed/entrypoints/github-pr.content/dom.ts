@@ -1,10 +1,13 @@
+const BUTTON_ID = "uncheck-viewed-btn";
+
 const SELECTORS = {
 	viewedButton: 'button[aria-label="Viewed"][aria-pressed="true"]',
 	filesCountText: '[class*="FilesCountText"]',
 	viewedProgress: '[class*="ViewedFileProgress-module__ProgressContainer"]',
+	uncheckButton: `button#${BUTTON_ID}`,
 } as const;
 
-export function findCheckedViewedButtons(): HTMLElement[] {
+export function findViewedButtons(): HTMLElement[] {
 	return Array.from(
 		document.querySelectorAll<HTMLElement>(SELECTORS.viewedButton),
 	);
@@ -15,8 +18,8 @@ export function getViewedCount(): number {
 	return el ? Number.parseInt(el.textContent ?? "0", 10) : 0;
 }
 
-export function getUncheckButton(id: string): HTMLButtonElement | null {
-	return document.querySelector<HTMLButtonElement>(`button#${id}`);
+export function findUncheckButton(): HTMLButtonElement | null {
+	return document.querySelector<HTMLButtonElement>(SELECTORS.uncheckButton);
 }
 
 export function findViewedProgress(): HTMLElement | null {
@@ -24,12 +27,11 @@ export function findViewedProgress(): HTMLElement | null {
 }
 
 export function createUncheckButton(
-	id: string,
 	label: string,
 	onClick: () => void,
 ): HTMLButtonElement {
 	const btn = document.createElement("button");
-	btn.id = id;
+	btn.id = BUTTON_ID;
 	btn.type = "button";
 	btn.className = "uncheck-viewed-btn";
 	btn.textContent = label;
