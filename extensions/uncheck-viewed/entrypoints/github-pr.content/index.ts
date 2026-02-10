@@ -1,3 +1,10 @@
+import {
+	createUncheckButton,
+	findCheckedViewedButtons,
+	findViewedProgress,
+	getUncheckButton,
+	getViewedCount,
+} from "./dom";
 import "./style.css";
 
 const BUTTON_ID = "uncheck-viewed-btn";
@@ -7,31 +14,15 @@ function sleep(ms: number): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function findCheckedViewedButtons(): HTMLElement[] {
-	return Array.from(
-		document.querySelectorAll<HTMLElement>(
-			'button[aria-label="Viewed"][aria-pressed="true"]',
-		),
-	);
-}
-
-function getViewedCount(): number {
-	const el = document.querySelector('[class*="FilesCountText"]');
-	return el ? Number.parseInt(el.textContent ?? "0", 10) : 0;
-}
-
-function getButton(): HTMLButtonElement | null {
-	return document.getElementById(BUTTON_ID) as HTMLButtonElement | null;
-}
-
 async function uncheckAllViewed(): Promise<void> {
-	const button = getButton();
+	const button = getUncheckButton(BUTTON_ID);
 	if (!button) return;
 
 	button.textContent = "Unchecking...";
 	button.disabled = true;
 
-	for (let attempt = 0; attempt < 100; attempt++) {
+	const MAX_ATTEMPTS = 500;
+	for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
 		if (getViewedCount() === 0) break;
 
 		for (const el of findCheckedViewedButtons()) {
@@ -45,20 +36,12 @@ async function uncheckAllViewed(): Promise<void> {
 }
 
 function insertButton(): void {
-	if (getButton()) return;
+	if (getUncheckButton(BUTTON_ID)) return;
 
-	const viewedProgress = document.querySelector<HTMLElement>(
-		'[class*="ViewedFileProgress-module__ProgressContainer"]',
-	);
+	const viewedProgress = findViewedProgress();
 	if (!viewedProgress) return;
 
-	const btn = document.createElement("button");
-	btn.id = BUTTON_ID;
-	btn.type = "button";
-	btn.className = "uncheck-viewed-btn";
-	btn.textContent = BUTTON_LABEL;
-	btn.addEventListener("click", uncheckAllViewed);
-
+	const btn = createUncheckButton(BUTTON_ID, BUTTON_LABEL, uncheckAllViewed);
 	viewedProgress.insertAdjacentElement("afterend", btn);
 }
 
