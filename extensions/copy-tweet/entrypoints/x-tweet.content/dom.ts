@@ -30,13 +30,11 @@ export function getArticleTitle(tweet: HTMLElement): string {
 }
 
 function extractBlockText(el: Element): string {
-	const tag = el.tagName;
-
-	// List: each li on its own line
-	if (tag === "UL" || tag === "OL") {
+	if (el.tagName === "UL" || el.tagName === "OL") {
 		return Array.from(el.querySelectorAll("li"))
-			.map((li) => `- ${li.textContent?.trim() ?? ""}`)
-			.filter((t) => t.length > 2)
+			.map((li) => li.textContent?.trim() ?? "")
+			.filter(Boolean)
+			.map((text) => `- ${text}`)
 			.join("\n");
 	}
 
@@ -51,10 +49,7 @@ export function getTweetText(tweet: HTMLElement): string {
 		if (!wrapper) return articleBody.textContent?.trim() ?? "";
 
 		const blocks = wrapper.querySelectorAll(":scope > *");
-		return Array.from(blocks)
-			.map((block) => extractBlockText(block))
-			.filter((t) => t.length > 0)
-			.join("\n");
+		return Array.from(blocks).map(extractBlockText).filter(Boolean).join("\n");
 	}
 
 	// Normal tweet
@@ -80,22 +75,20 @@ export function getTimestamp(tweet: HTMLElement): string {
 	return time?.dateTime ?? "";
 }
 
-export function getImageUrls(tweet: HTMLElement): string[] {
-	// Normal tweet photos
-	const imgs = tweet.querySelectorAll<HTMLImageElement>(SELECTORS.tweetPhoto);
-	if (imgs.length > 0) {
-		return Array.from(imgs)
-			.map((img) => img.src)
-			.filter((src) => src.length > 0);
-	}
+function extractSrcs(imgs: NodeListOf<HTMLImageElement>): string[] {
+	return Array.from(imgs)
+		.map((img) => img.src)
+		.filter(Boolean);
+}
 
-	// X Article: images inside the read view
+export function getImageUrls(tweet: HTMLElement): string[] {
+	const tweetPhotos = tweet.querySelectorAll<HTMLImageElement>(
+		SELECTORS.tweetPhoto,
+	);
+	if (tweetPhotos.length > 0) return extractSrcs(tweetPhotos);
+
 	const readView = tweet.querySelector(SELECTORS.articleReadView);
-	if (readView) {
-		return Array.from(readView.querySelectorAll<HTMLImageElement>("img"))
-			.map((img) => img.src)
-			.filter((src) => src.length > 0);
-	}
+	if (readView) return extractSrcs(readView.querySelectorAll("img"));
 
 	return [];
 }

@@ -13,7 +13,10 @@ import {
 } from "./dom";
 import "./style.css";
 
-function handleCopy(tweet: HTMLElement, button: HTMLButtonElement): void {
+async function handleCopy(
+	tweet: HTMLElement,
+	button: HTMLButtonElement,
+): Promise<void> {
 	const { displayName, handle } = getUserName(tweet);
 	const text = getTweetText(tweet);
 	const timestamp = getTimestamp(tweet);
@@ -23,28 +26,26 @@ function handleCopy(tweet: HTMLElement, button: HTMLButtonElement): void {
 	button.textContent = "Copying...";
 	button.disabled = true;
 
-	copyTweetToClipboard({
-		displayName,
-		handle,
-		timestamp,
-		text,
-		imageUrls,
-		articleTitle,
-	})
-		.then(() => {
-			button.textContent = "Copied!";
-			setTimeout(() => {
-				button.textContent = "Copy";
-				button.disabled = false;
-			}, 1500);
-		})
-		.catch(() => {
-			button.textContent = "Failed";
-			setTimeout(() => {
-				button.textContent = "Copy";
-				button.disabled = false;
-			}, 1500);
+	let label: string;
+	try {
+		await copyTweetToClipboard({
+			displayName,
+			handle,
+			timestamp,
+			text,
+			imageUrls,
+			articleTitle,
 		});
+		label = "Copied!";
+	} catch {
+		label = "Failed";
+	}
+
+	button.textContent = label;
+	setTimeout(() => {
+		button.textContent = "Copy";
+		button.disabled = false;
+	}, 1500);
 }
 
 function insertButtons(): void {
