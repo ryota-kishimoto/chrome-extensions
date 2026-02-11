@@ -1,0 +1,33 @@
+.copy-tweet-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 12px;
+	height: 34px;
+	font-size: 13px;
+	font-weight: 400;
+	line-height: 1;
+	color: rgb(113, 118, 123);
+	background: transparent;
+	border: none;
+	border-radius: 9999px;
+	cursor: pointer;
+	white-space: nowrap;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+		Arial, sans-serif;
+	transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.copy-tweet-btn:hover {
+	background-color: rgba(29, 155, 240, 0.1);
+	color: rgb(29, 155, 240);
+}
+
+.copy-tweet-btn:active {
+	background-color: rgba(29, 155, 240, 0.2);
+}
+
+.copy-tweet-btn[disabled] {
+	opacity: 0.6;
+	cursor: default;
+}
