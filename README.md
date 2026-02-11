@@ -1,41 +1,56 @@
 # Chrome Extensions
 
-個人用 Chrome 拡張機能のモノレポ。
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+
+Chrome 拡張機能のモノレポ。
 
 ## Tech Stack
 
-- **pnpm workspaces** - モノレポ管理
-- **WXT** - ビルド (Vite ベース, Manifest V3)
+- **pnpm workspaces** — モノレポ管理
+- **WXT** — ビルド (Vite ベース, Manifest V3)
 - **TypeScript**
-- **Biome** - Lint / Format
+- **Biome** — Lint / Format
 
 ## Extensions
 
-### [uncheck-viewed](./extensions/uncheck-viewed/)
+### [Copy from X](./extensions/copy-tweet/)
+
+X（Twitter）のツイートや記事をワンクリックでコピーする拡張機能。
+
+- 各ツイートのアクションバーに「Copy」ボタンを追加
+- Markdown 形式でクリップボードにコピー（`text/plain`）
+- 画像を base64 埋め込み HTML としてもコピー（`text/html`）
+- X Article（長文記事）に対応
+
+### [Uncheck Viewed](./extensions/uncheck-viewed/)
 
 GitHub PR の Files Changed タブで「Viewed」チェックを一括解除する拡張機能。
 
-ツールバーの viewed カウンター横に「Uncheck All Viewed」ボタンを追加する。
+- viewed カウンター横に「Uncheck All Viewed」ボタンを追加
 
-#### インストール
+## Getting Started
 
 ```bash
+# インストール
 pnpm install
-pnpm --filter uncheck-viewed build
+
+# 拡張機能をビルド
+pnpm --filter <extension-name> build
+
+# 開発モード（ホットリロード）
+pnpm --filter <extension-name> dev
+
+# lint
+pnpm -w lint
+pnpm -w lint:fix
 ```
 
-Chrome で `chrome://extensions` を開き、デベロッパーモードを有効にして「パッケージ化されていない拡張機能を読み込む」から以下を選択：
+ビルド後、`chrome://extensions` でデベロッパーモードを有効にし、「パッケージ化されていない拡張機能を読み込む」から選択：
 
 ```
-extensions/uncheck-viewed/.output/chrome-mv3
+extensions/<extension-name>/.output/chrome-mv3
 ```
 
-#### 開発
+## License
 
-```bash
-pnpm --filter uncheck-viewed build  # ビルド
-pnpm -w lint                        # lint チェック
-pnpm -w lint:fix                    # lint 自動修正
-```
-
-ビルド後、`chrome://extensions` でリロードボタンを押してページを更新。
+[MIT](./LICENSE)
