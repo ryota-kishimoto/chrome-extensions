@@ -2,7 +2,7 @@
 	"name": "copy-tweet",
 	"version": "1.0.0",
 	"private": true,
-	"description": "Copy tweet content as Markdown with embedded images for AI",
+	"description": "Copy tweet and article content as Markdown with embedded images",
 	"scripts": {
 		"dev": "wxt",
 		"build": "wxt build",
