@@ -45,10 +45,7 @@ function insertButton(): void {
 }
 
 export default defineContentScript({
-	matches: [
-		"https://github.com/*/pull/*/files*",
-		"https://github.com/*/pull/*/changes*",
-	],
+	matches: ["https://github.com/*/pull/*"],
 	runAt: "document_idle",
 
 	main(ctx) {
