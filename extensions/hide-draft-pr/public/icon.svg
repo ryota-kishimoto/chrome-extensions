@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- 背景 -->
+  <rect width="128" height="128" rx="28" fill="#1f2328"/>
+
+  <!-- PRアイコン（ブランチ構造） -->
+  <!-- 下のノード -->
+  <circle cx="34" cy="90" r="9" fill="none" stroke="#8b949e" stroke-width="6"/>
+  <!-- 上のノード -->
+  <circle cx="34" cy="38" r="9" fill="none" stroke="#8b949e" stroke-width="6"/>
+  <!-- 右のノード -->
+  <circle cx="90" cy="58" r="9" fill="none" stroke="#8b949e" stroke-width="6"/>
+
+  <!-- 縦線 -->
+  <line x1="34" y1="47" x2="34" y2="81" stroke="#8b949e" stroke-width="6" stroke-linecap="round"/>
+  <!-- カーブ -->
+  <path d="M34 47 C34 32 90 32 90 49" fill="none" stroke="#8b949e" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- 目を閉じた線（斜めスラッシュ） -->
+  <line x1="72" y1="80" x2="112" y2="112" stroke="#f85149" stroke-width="7" stroke-linecap="round"/>
+  <line x1="112" y1="80" x2="72" y2="112" stroke="#f85149" stroke-width="7" stroke-linecap="round"/>
+</svg>
