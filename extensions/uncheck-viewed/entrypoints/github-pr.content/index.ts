@@ -1,8 +1,8 @@
 import {
 	createUncheckButton,
+	findInsertTarget,
 	findUncheckButton,
 	findViewedButtons,
-	findViewedProgress,
 	getViewedCount,
 } from "./dom";
 import "./style.css";
@@ -37,11 +37,11 @@ async function uncheckAllViewed(): Promise<void> {
 function insertButton(): void {
 	if (findUncheckButton()) return;
 
-	const viewedProgress = findViewedProgress();
-	if (!viewedProgress) return;
+	const target = findInsertTarget();
+	if (!target) return;
 
 	const btn = createUncheckButton(BUTTON_LABEL, uncheckAllViewed);
-	viewedProgress.insertAdjacentElement("afterend", btn);
+	target.element.insertAdjacentElement(target.position, btn);
 }
 
 const RETRY_DELAYS_MS = [1000, 2000];

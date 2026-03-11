@@ -8,6 +8,8 @@ const SELECTORS = {
 	// classic view
 	viewedCheckbox: "input.js-reviewed-checkbox:checked",
 	filesViewedText: ".diffbar-item.hide-md.hide-sm",
+	askCopilot: "#copilot-diff-header-button",
+	askCopilotContainer: ".pr-review-tools > div:has(#copilot-diff-header-button)",
 
 	uncheckButton: `button#${BUTTON_ID}`,
 } as const;
@@ -44,11 +46,24 @@ export function findUncheckButton(): HTMLButtonElement | null {
 	return document.querySelector<HTMLButtonElement>(SELECTORS.uncheckButton);
 }
 
-export function findViewedProgress(): HTMLElement | null {
-	return (
-		document.querySelector<HTMLElement>(SELECTORS.viewedProgress) ??
-		document.querySelector<HTMLElement>(SELECTORS.filesViewedText)
+type InsertTarget = { element: HTMLElement; position: InsertPosition };
+
+export function findInsertTarget(): InsertTarget | null {
+	// new experience
+	const newEl = document.querySelector<HTMLElement>(SELECTORS.viewedProgress);
+	if (newEl) return { element: newEl, position: "afterend" };
+
+	// classic view: Ask Copilotの左
+	const askCopilotContainer = document.querySelector<HTMLElement>(SELECTORS.askCopilotContainer);
+	if (askCopilotContainer) return { element: askCopilotContainer, position: "beforebegin" };
+
+	// classic view: fallback（files viewedの右）
+	const filesViewed = document.querySelector<HTMLElement>(
+		SELECTORS.filesViewedText,
 	);
+	if (filesViewed) return { element: filesViewed, position: "afterend" };
+
+	return null;
 }
 
 export function createUncheckButton(
@@ -58,7 +73,7 @@ export function createUncheckButton(
 	const btn = document.createElement("button");
 	btn.id = BUTTON_ID;
 	btn.type = "button";
-	btn.className = "uncheck-viewed-btn";
+	btn.className = "uncheck-viewed-btn diffbar-item";
 	btn.textContent = label;
 	btn.addEventListener("click", onClick);
 	return btn;
