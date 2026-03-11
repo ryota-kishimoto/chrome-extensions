@@ -5,7 +5,7 @@
 	"description": "Copy tweet and article content as Markdown with embedded images",
 	"scripts": {
 		"dev": "wxt",
-		"build": "wxt build",
+		"build": "wxt build && cp .output/chrome-mv3/content-scripts/x-tweet.js ~/.chrome/extensions/copy-tweet/content-scripts/x-tweet.js && cp .output/chrome-mv3/content-scripts/x-tweet.css ~/.chrome/extensions/copy-tweet/content-scripts/x-tweet.css",
 		"postinstall": "wxt prepare"
 	},
 	"devDependencies": {

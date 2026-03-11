@@ -5,7 +5,7 @@
 	"description": "Uncheck all Viewed files on GitHub PR Files Changed tab",
 	"scripts": {
 		"dev": "wxt",
-		"build": "wxt build",
+		"build": "wxt build && cp .output/chrome-mv3/content-scripts/github-pr.js ~/.chrome/extensions/uncheck-viewed/content-scripts/github-pr.js && cp .output/chrome-mv3/content-scripts/github-pr.css ~/.chrome/extensions/uncheck-viewed/content-scripts/github-pr.css",
 		"postinstall": "wxt prepare"
 	},
 	"devDependencies": {
