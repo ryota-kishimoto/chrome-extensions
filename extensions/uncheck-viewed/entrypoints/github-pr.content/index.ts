@@ -44,6 +44,15 @@ function insertButton(): void {
 	viewedProgress.insertAdjacentElement("afterend", btn);
 }
 
+const RETRY_DELAYS_MS = [1000, 2000];
+
+function startRetry(ctx: ContentScriptContext): void {
+	for (const delay of RETRY_DELAYS_MS) {
+		const timer = setTimeout(() => insertButton(), delay);
+		ctx.onInvalidated(() => clearTimeout(timer));
+	}
+}
+
 export default defineContentScript({
 	matches: ["https://github.com/*"],
 	runAt: "document_idle",
@@ -51,7 +60,16 @@ export default defineContentScript({
 	main(ctx) {
 		insertButton();
 
-		const observer = new MutationObserver(insertButton);
+		let lastUrl = location.href;
+		const observer = new MutationObserver(() => {
+			insertButton();
+
+			const currentUrl = location.href;
+			if (currentUrl !== lastUrl) {
+				lastUrl = currentUrl;
+				startRetry(ctx);
+			}
+		});
 		observer.observe(document.body, { childList: true, subtree: true });
 		ctx.onInvalidated(() => observer.disconnect());
 	},
