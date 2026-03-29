@@ -2,42 +2,32 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
-Chrome 拡張機能のモノレポ。
-
-## Tech Stack
-
-- **pnpm workspaces** — モノレポ管理
-- **WXT** — ビルド (Vite ベース, Manifest V3)
-- **TypeScript**
-- **Biome** — Lint / Format
+A monorepo of Chrome extensions built with WXT and TypeScript.
 
 ## Extensions
 
-### [Copy from X](./extensions/copy-tweet/)
+| Extension | Description |
+|-----------|-------------|
+| [Copy from X](./extensions/copy-tweet/) | Copy tweets and articles as Markdown with embedded images |
+| [Hide Draft PR](./extensions/hide-draft-pr/) | Hide draft pull requests on GitHub PR list |
+| [Uncheck Viewed](./extensions/uncheck-viewed/) | Uncheck all Viewed files on GitHub PR Files Changed tab |
 
-X（Twitter）のツイートや記事をワンクリックでコピーする拡張機能。
+## Tech Stack
 
-- 各ツイートのアクションバーに「Copy」ボタンを追加
-- Markdown 形式でクリップボードにコピー（`text/plain`）
-- 画像を base64 埋め込み HTML としてもコピー（`text/html`）
-- X Article（長文記事）に対応
+- [WXT](https://wxt.dev/) — Chrome extension framework (Vite-based, Manifest V3)
+- [TypeScript](https://www.typescriptlang.org/)
+- [pnpm workspaces](https://pnpm.io/workspaces) — monorepo management
+- [Biome](https://biomejs.dev/) — lint / format
 
-### [Uncheck Viewed](./extensions/uncheck-viewed/)
-
-GitHub PR の Files Changed タブで「Viewed」チェックを一括解除する拡張機能。
-
-- viewed カウンター横に「Uncheck All Viewed」ボタンを追加
-
-## Getting Started
+## Development
 
 ```bash
-# インストール
 pnpm install
 
-# 拡張機能をビルド
+# build a specific extension
 pnpm --filter <extension-name> build
 
-# 開発モード（ホットリロード）
+# dev mode with hot reload
 pnpm --filter <extension-name> dev
 
 # lint
@@ -45,11 +35,11 @@ pnpm -w lint
 pnpm -w lint:fix
 ```
 
-ビルド後、`chrome://extensions` でデベロッパーモードを有効にし、「パッケージ化されていない拡張機能を読み込む」から選択：
+After building, load the extension in Chrome:
 
-```
-extensions/<extension-name>/.output/chrome-mv3
-```
+1. Open `chrome://extensions`
+2. Enable **Developer mode**
+3. Click **Load unpacked** and select `extensions/<extension-name>/.output/chrome-mv3`
 
 ## License
 
