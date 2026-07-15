@@ -9,6 +9,7 @@ A monorepo of Chrome extensions built with WXT and TypeScript.
 | Extension | Description |
 |-----------|-------------|
 | [Copy from X](./extensions/copy-tweet/) | Copy tweets and articles as Markdown with embedded images |
+| [Diff Preview](./extensions/diff-preview/) | Preview the rendered output of HTML and Lottie files on GitHub PR Files Changed tab |
 | [Hide Draft PR](./extensions/hide-draft-pr/) | Hide draft pull requests on GitHub PR list |
 | [Uncheck Viewed](./extensions/uncheck-viewed/) | Uncheck all Viewed files on GitHub PR Files Changed tab |
 

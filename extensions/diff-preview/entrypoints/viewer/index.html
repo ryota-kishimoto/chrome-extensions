@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Diff Preview</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+      color: #1f2328;
+    }
+    #status {
+      padding: 16px;
+      font-size: 14px;
+    }
+    #status.error {
+      color: #b23b36;
+    }
+    iframe {
+      display: none;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    #lottie {
+      display: none;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+      /* Checkerboard so animations with transparency read clearly. */
+      background:
+        conic-gradient(#f0f0f0 90deg, #ffffff 90deg 180deg, #f0f0f0 180deg 270deg, #ffffff 270deg)
+        0 0 / 24px 24px;
+    }
+    #lottie > svg {
+      max-width: 90vmin;
+      max-height: 90vmin;
+    }
+  </style>
+</head>
+<body>
+  <div id="status">Loading preview...</div>
+  <iframe id="frame" title="HTML preview"></iframe>
+  <div id="lottie" role="img" aria-label="Lottie preview"></div>
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>
