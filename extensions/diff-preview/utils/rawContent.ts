@@ -11,7 +11,7 @@ export function rawFileUrl(ref: FileRef): string {
 	return `https://github.com/${ref.owner}/${ref.repo}/raw/${ref.sha}/${ref.path}`;
 }
 
-function rawDirUrl(ref: FileRef): string {
+export function rawDirUrl(ref: FileRef): string {
 	const dir = ref.path.slice(0, ref.path.lastIndexOf("/") + 1);
 	return `https://github.com/${ref.owner}/${ref.repo}/raw/${ref.sha}/${dir}`;
 }
@@ -22,7 +22,7 @@ export async function fetchRawFile(ref: FileRef): Promise<string> {
 	return res.text();
 }
 
-function blobToDataUrl(blob: Blob): Promise<string> {
+export function blobToDataUrl(blob: Blob): Promise<string> {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
 		reader.onload = () => resolve(reader.result as string);

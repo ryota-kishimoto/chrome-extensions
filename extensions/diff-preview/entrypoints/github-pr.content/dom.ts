@@ -26,6 +26,7 @@ type DiffContent = {
 	oldCommitOid: string | null;
 	newCommitOid: string | null;
 	status: string;
+	diffLines?: unknown[];
 };
 
 type RepoInfo = {
@@ -94,25 +95,54 @@ function findDiffContainer(header: HTMLElement): HTMLElement | null {
 	);
 }
 
+/** The file's path as displayed in the header. Long paths come back
+ * prefix-truncated ("…/foo/bar.json"), so only rely on the suffix — for the
+ * real path use getFileRef. */
 export function getFilePath(header: HTMLElement): string | null {
 	const nameEl = header.querySelector<HTMLElement>(SELECTORS.fileName);
-	const text = nameEl?.textContent?.replace(BIDI_MARK_RE, "").trim();
-	return text || null;
+	if (!nameEl) return null;
+
+	// Skip the sr-only "old renamed to new" text; the visible span wraps each
+	// path in U+200E marks, and a rename shows "old → new", so the file's
+	// current path is the last marked segment.
+	const visible =
+		nameEl.querySelector<HTMLElement>('[aria-hidden="true"]') ?? nameEl;
+	const segments = (visible.textContent ?? "")
+		.split(BIDI_MARK_RE)
+		.map((s) => s.trim())
+		.filter(Boolean);
+	return segments.at(-1) ?? null;
 }
 
-function getFileRefFromJsonIsland(header: HTMLElement): FileRef | null {
+function findDiffContent(header: HTMLElement): DiffContent | null {
 	const container = findDiffContainer(header);
 	const pathDigest = container?.id?.replace(/^diff-/, "");
 	if (!pathDigest) return null;
+	return (
+		readJsonIslandData()?.diffContents.find(
+			(d) => d.pathDigest === pathDigest,
+		) ?? null
+	);
+}
 
-	const data = readJsonIslandData();
-	if (!data) return null;
+/** The file's diff text as inlined into GitHub's page data, or null when the
+ * page doesn't carry it (file not inlined, or diff too big / binary). */
+export function getDiffText(header: HTMLElement): string | null {
+	const lines = findDiffContent(header)?.diffLines;
+	return lines?.length ? JSON.stringify(lines) : null;
+}
 
-	const entry = data.diffContents.find((d) => d.pathDigest === pathDigest);
+/** Resolves the file reference from GitHub's page data only — no menu
+ * fallback — so it's safe to call outside a user gesture. */
+export function getFileRefSync(header: HTMLElement): FileRef | null {
+	const entry = findDiffContent(header);
 	if (!entry) return null;
 
 	const sha = entry.newCommitOid ?? entry.oldCommitOid;
 	if (!sha) return null;
+
+	const data = readJsonIslandData();
+	if (!data) return null;
 
 	return {
 		owner: data.repo.owner,
@@ -169,7 +199,7 @@ async function getFileRefFromMenu(
 }
 
 export async function getFileRef(header: HTMLElement): Promise<FileRef | null> {
-	return getFileRefFromJsonIsland(header) ?? (await getFileRefFromMenu(header));
+	return getFileRefSync(header) ?? (await getFileRefFromMenu(header));
 }
 
 export function findPreviewButton(

@@ -1,13 +1,22 @@
 import {
+	isHtmlFile,
+	isJsonFile,
+	isLottieFile,
+	looksLikeLottie,
+} from "../../utils/fileTypes";
+import { rawFileUrl } from "../../utils/rawContent";
+import {
 	createPreviewButton,
 	findFileHeaders,
 	findPreviewButton,
 	flashButton,
+	getDiffText,
 	getFilePath,
 	getFileRef,
+	getFileRefSync,
 	insertPreviewButton,
 } from "./dom";
-import { isHtmlFile, viewerUrl } from "./preview";
+import { viewerUrl } from "./preview";
 import "./style.css";
 
 async function handlePreviewClick(
@@ -30,17 +39,53 @@ async function handlePreviewClick(
 	newTab.location.href = viewerUrl(ref);
 }
 
+function insertButton(header: HTMLElement): void {
+	const btn = createPreviewButton((button) => {
+		handlePreviewClick(header, button);
+	});
+	insertPreviewButton(header, btn);
+}
+
+// Marks .json headers whose content check already ran, so the MutationObserver
+// re-runs of insertButtons don't kick off duplicate checks or fetches.
+const JSON_CHECKED_ATTR = "data-diff-preview-checked";
+
+/**
+ * .json files only get a button when they actually contain a Lottie animation
+ * — a button on every package.json would be noise. The diff text GitHub
+ * already inlined into the page decides it for free; only files whose diff
+ * isn't inlined (e.g. too big) cost a fetch.
+ */
+async function checkJsonForLottie(header: HTMLElement): Promise<void> {
+	const diffText = getDiffText(header);
+	if (diffText) {
+		if (looksLikeLottie(diffText)) insertButton(header);
+		return;
+	}
+
+	const ref = getFileRefSync(header);
+	if (!ref) return;
+	try {
+		const res = await fetch(rawFileUrl(ref));
+		if (res.ok && looksLikeLottie(await res.text())) insertButton(header);
+	} catch {
+		// No button; the file just isn't previewable right now.
+	}
+}
+
 function insertButtons(): void {
 	for (const header of findFileHeaders()) {
 		if (findPreviewButton(header)) continue;
 
 		const path = getFilePath(header);
-		if (!path || !isHtmlFile(path)) continue;
+		if (!path) continue;
 
-		const btn = createPreviewButton((button) => {
-			handlePreviewClick(header, button);
-		});
-		insertPreviewButton(header, btn);
+		if (isHtmlFile(path) || isLottieFile(path)) {
+			insertButton(header);
+		} else if (isJsonFile(path) && !header.hasAttribute(JSON_CHECKED_ATTR)) {
+			header.setAttribute(JSON_CHECKED_ATTR, "");
+			checkJsonForLottie(header);
+		}
 	}
 }
 

@@ -4,7 +4,7 @@ export default defineConfig({
 	manifest: {
 		name: "Diff Preview",
 		description:
-			"Preview the rendered output of HTML files on GitHub PR Files Changed tab",
+			"Preview the rendered output of HTML and Lottie files on GitHub PR Files Changed tab",
 		host_permissions: ["https://github.com/*"],
 		web_accessible_resources: [
 			{

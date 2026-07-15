@@ -23,11 +23,26 @@
       height: 100%;
       border: none;
     }
+    #lottie {
+      display: none;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+      /* Checkerboard so animations with transparency read clearly. */
+      background:
+        conic-gradient(#f0f0f0 90deg, #ffffff 90deg 180deg, #f0f0f0 180deg 270deg, #ffffff 270deg)
+        0 0 / 24px 24px;
+    }
+    #lottie > svg {
+      max-width: 90vmin;
+      max-height: 90vmin;
+    }
   </style>
 </head>
 <body>
   <div id="status">Loading preview...</div>
   <iframe id="frame" title="HTML preview"></iframe>
+  <div id="lottie" role="img" aria-label="Lottie preview"></div>
   <script type="module" src="./main.ts"></script>
 </body>
 </html>
