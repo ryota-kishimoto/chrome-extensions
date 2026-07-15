@@ -1,7 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
   <rect width="128" height="128" rx="16" fill="#24292f"/>
-  <!-- Eye outline (preview) -->
-  <path d="M20 64 C34 38, 94 38, 108 64 C94 90, 34 90, 20 64 Z" stroke="#8b949e" stroke-width="6" stroke-linejoin="round" fill="none"/>
-  <!-- Pupil -->
-  <circle cx="64" cy="64" r="14" fill="#3fb950"/>
+  <!-- Browser window frame -->
+  <rect x="22" y="28" width="84" height="72" rx="8" stroke="#8b949e" stroke-width="6" fill="none"/>
+  <!-- Title bar divider -->
+  <line x1="22" y1="46" x2="106" y2="46" stroke="#8b949e" stroke-width="6"/>
+  <!-- Title bar dots -->
+  <circle cx="33" cy="37" r="3" fill="#8b949e"/>
+  <circle cx="43" cy="37" r="3" fill="#8b949e"/>
+  <!-- Play triangle (rendered preview) -->
+  <path d="M56 60 L78 73 L56 86 Z" fill="#3fb950" stroke="#3fb950" stroke-width="6" stroke-linejoin="round"/>
 </svg>
