@@ -29,6 +29,12 @@ type DiffContent = {
 	diffLines?: unknown[];
 };
 
+type DiffSummary = {
+	path: string;
+	pathDigest: string;
+	changeType?: string;
+};
+
 type RepoInfo = {
 	owner: string;
 	repo: string;
@@ -36,7 +42,10 @@ type RepoInfo = {
 
 function readJsonIslandData(): {
 	diffContents: DiffContent[];
+	diffSummaries: DiffSummary[];
 	repo: RepoInfo;
+	baseOid: string | null;
+	headOid: string | null;
 } | null {
 	const scripts = document.querySelectorAll<HTMLScriptElement>(
 		'script[type="application/json"]',
@@ -72,7 +81,18 @@ function readJsonIslandData(): {
 			(pullRequest?.headRepositoryName as string | undefined) ??
 			(repository.name as string);
 
-		return { diffContents, repo: { owner, repo } };
+		const fullDiff = (
+			changesRoute.comparison as Record<string, unknown> | undefined
+		)?.fullDiff as Record<string, unknown> | undefined;
+
+		return {
+			diffContents,
+			diffSummaries:
+				(changesRoute.diffSummaries as DiffSummary[] | undefined) ?? [],
+			repo: { owner, repo },
+			baseOid: (fullDiff?.baseOid as string | undefined) ?? null,
+			headOid: (fullDiff?.headOid as string | undefined) ?? null,
+		};
 	}
 	return null;
 }
@@ -135,20 +155,38 @@ export function getDiffText(header: HTMLElement): string | null {
 /** Resolves the file reference from GitHub's page data only — no menu
  * fallback — so it's safe to call outside a user gesture. */
 export function getFileRefSync(header: HTMLElement): FileRef | null {
-	const entry = findDiffContent(header);
-	if (!entry) return null;
-
-	const sha = entry.newCommitOid ?? entry.oldCommitOid;
-	if (!sha) return null;
+	const container = findDiffContainer(header);
+	const pathDigest = container?.id?.replace(/^diff-/, "");
+	if (!pathDigest) return null;
 
 	const data = readJsonIslandData();
 	if (!data) return null;
+
+	// diffContents carries per-file commit oids, but only for the first batch
+	// of files GitHub inlines. diffSummaries lists every file in the PR, so
+	// fall back to it with the comparison's overall head (or, for deletions,
+	// base) commit.
+	const entry = data.diffContents.find((d) => d.pathDigest === pathDigest);
+	const entrySha = entry ? (entry.newCommitOid ?? entry.oldCommitOid) : null;
+	if (entry && entrySha) {
+		return {
+			owner: data.repo.owner,
+			repo: data.repo.repo,
+			sha: entrySha,
+			path: entry.path,
+		};
+	}
+
+	const summary = data.diffSummaries.find((d) => d.pathDigest === pathDigest);
+	if (!summary) return null;
+	const sha = summary.changeType === "DELETED" ? data.baseOid : data.headOid;
+	if (!sha) return null;
 
 	return {
 		owner: data.repo.owner,
 		repo: data.repo.repo,
 		sha,
-		path: entry.path,
+		path: summary.path,
 	};
 }
 
