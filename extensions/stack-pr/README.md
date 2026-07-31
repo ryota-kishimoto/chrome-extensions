@@ -10,8 +10,8 @@ extension pulls each stack back together and orders it from the base branch upwa
 
 - Groups PRs belonging to the same stack into a contiguous block
 - Orders members from the base branch upwards (`1.` is closest to the base)
-- Frames each stack as a card — header row, accent border, and spacing above and
-  below — so it reads as one unit separated from the surrounding PRs
+- Bounds each stack with a header row above and a thick rule below, plus an accent
+  border on members, so it reads as one block among the surrounding PRs
 - Toggle in the extension popup
 
 ## How it works

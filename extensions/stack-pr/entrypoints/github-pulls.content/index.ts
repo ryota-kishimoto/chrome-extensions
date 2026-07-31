@@ -121,33 +121,26 @@ function injectStyle(): void {
 
 	const style = document.createElement("style");
 	style.id = STYLE_ID;
-	// The header opens the card and the last member closes it, so a stack reads as
-	// one block separated from the unrelated pull requests around it.
+	// The header opens a stack and a thick band under the last member closes it.
+	// The band is deliberately heavier than a hairline: at GitHub's own border
+	// weight the boundary reads as just another row separator.
 	style.textContent = `
 		.${HEADER_CLASS} {
 			display: flex;
 			align-items: center;
 			gap: 6px;
-			margin-top: 12px;
-			padding: 7px 16px;
+			padding: 6px 16px;
 			font-size: 12px;
 			font-weight: 600;
 			color: var(--fgColor-muted, #59636e);
 			background: var(--bgColor-muted, #f6f8fa);
-			border: 1px solid var(--borderColor-default, #d1d9e0);
-			border-bottom: none;
-			border-radius: 6px 6px 0 0;
-			box-shadow: inset 3px 0 0 var(--borderColor-accent-emphasis, #0969da);
+			border-top: 1px solid var(--borderColor-default, #d1d9e0);
 		}
 		.${MEMBER_CLASS} {
-			border-left: 1px solid var(--borderColor-default, #d1d9e0);
-			border-right: 1px solid var(--borderColor-default, #d1d9e0);
-			box-shadow: inset 3px 0 0 var(--borderColor-accent-emphasis, #0969da);
+			box-shadow: inset 2px 0 0 var(--borderColor-accent-emphasis, #0969da);
 		}
 		.${LAST_MEMBER_CLASS} {
-			margin-bottom: 12px;
-			border-bottom: 1px solid var(--borderColor-default, #d1d9e0);
-			border-radius: 0 0 6px 6px;
+			border-bottom: 10px solid var(--borderColor-default, #d1d9e0);
 		}
 		.${MEMBER_CLASS} .${MEMBER_CLASS}-position {
 			display: inline-block;
