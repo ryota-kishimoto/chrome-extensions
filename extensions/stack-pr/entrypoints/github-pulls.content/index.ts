@@ -1,10 +1,15 @@
+import {
+	listPageLinks,
+	listRows,
+	listStackedRows,
+	rowNumber,
+	titleLink,
+} from "./dom";
+
 const STORAGE_KEY = "groupStackedPR";
 
-const ROW_SELECTOR = 'div[id^="issue_"]';
-const STACK_ICON_SELECTOR = ".octicon-stack";
 const BASE_REF_SELECTOR = ".commit-ref.base-ref";
 const COMMIT_REF_SELECTOR = ".commit-ref";
-const PAGE_LINK_SELECTOR = '.paginate-container a[href*="page="]';
 
 const HEADER_CLASS = "stack-pr-header";
 const MEMBER_CLASS = "stack-pr-member";
@@ -26,14 +31,6 @@ type Stack = {
 	members: PullRefs[];
 };
 
-function rowNumber(row: HTMLElement): number {
-	return Number(row.id.replace("issue_", ""));
-}
-
-function listRows(): HTMLElement[] {
-	return [...document.querySelectorAll<HTMLElement>(ROW_SELECTOR)];
-}
-
 /**
  * Identity of the list GitHub itself rendered. Imported rows are excluded so
  * the signature is unchanged by our own edits and by clearing them again —
@@ -43,17 +40,8 @@ function pageSignature(): string {
 	return listRows()
 		.filter((row) => !row.classList.contains(IMPORTED_CLASS))
 		.map(rowNumber)
+		.filter((number): number is number => number !== null)
 		.join(",");
-}
-
-/**
- * Rows GitHub itself marks as part of a stack. Only these need a hovercard
- * fetch, which keeps the request count to the stacked PRs on the page.
- */
-function listStackedRows(root: ParentNode): HTMLElement[] {
-	return [...root.querySelectorAll<HTMLElement>(ROW_SELECTOR)].filter((row) =>
-		row.querySelector(STACK_ICON_SELECTOR),
-	);
 }
 
 function repoPath(): string {
@@ -97,9 +85,7 @@ function currentPage(): number {
  * full range.
  */
 function listPageNumbers(): number[] {
-	const pages = [
-		...document.querySelectorAll<HTMLAnchorElement>(PAGE_LINK_SELECTOR),
-	].map((link) =>
+	const pages = listPageLinks().map((link) =>
 		Number(new URL(link.href, location.origin).searchParams.get("page") ?? "1"),
 	);
 	const last = Math.max(currentPage(), ...pages.filter(Number.isFinite));
@@ -133,11 +119,10 @@ async function harvestPage(page: number): Promise<PageHarvest> {
 	const doc = await fetchDocument(pageUrl(page));
 	if (!doc) return { rows: [], refs: [] };
 
-	const rows = listStackedRows(doc).map((row) => ({
-		number: rowNumber(row),
-		page,
-		row,
-	}));
+	const rows = listStackedRows(doc).flatMap((row) => {
+		const number = rowNumber(row);
+		return number === null ? [] : [{ number, page, row }];
+	});
 	const refs = (
 		await Promise.all(rows.map((row) => fetchRefs(row.number)))
 	).filter((pull): pull is PullRefs => pull !== null);
@@ -293,12 +278,6 @@ function buildHeader(
 	return header;
 }
 
-function titleLink(row: HTMLElement): HTMLElement | null {
-	return row.querySelector<HTMLElement>(
-		'a[id^="issue_"][data-hovercard-type="pull_request"]',
-	);
-}
-
 function decorate(
 	row: HTMLElement,
 	position: number,
@@ -334,7 +313,10 @@ function decorate(
 function reorder(stacks: Stack[], remote: Map<number, RemoteRow>): void {
 	for (const stack of stacks) {
 		const rows = new Map(
-			listRows().map((row) => [rowNumber(row), row] as const),
+			listRows().flatMap((row) => {
+				const number = rowNumber(row);
+				return number === null ? [] : [[number, row] as const];
+			}),
 		);
 		// A member absent from this page is imported from the page it lives on, so
 		// the row keeps its real title, labels and links instead of being faked.
@@ -421,7 +403,9 @@ async function apply(): Promise<void> {
 			return;
 		}
 
-		const localStacked = listStackedRows(document).map(rowNumber);
+		const localStacked = listStackedRows(document)
+			.map(rowNumber)
+			.filter((number): number is number => number !== null);
 		if (localStacked.length === 0) {
 			lastSignature = signature;
 			return;
