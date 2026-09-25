@@ -1,6 +1,6 @@
 {
 	"name": "diff-preview",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"private": true,
 	"description": "Preview the rendered output of HTML and Lottie files on GitHub PR Files Changed tab",
 	"scripts": {
