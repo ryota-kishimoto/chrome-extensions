@@ -1,6 +1,6 @@
 {
 	"name": "stack-pr",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"private": true,
 	"description": "Group and sort stacked pull requests on GitHub PR list",
 	"scripts": {
