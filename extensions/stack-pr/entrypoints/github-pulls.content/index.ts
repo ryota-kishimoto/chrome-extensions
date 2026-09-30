@@ -385,11 +385,20 @@ async function getEnabled(): Promise<boolean> {
 
 /** Guards against the MutationObserver reacting to our own reordering. */
 let applying = false;
+/**
+ * Set when the list changed while a run was fetching. The observer does not
+ * fire again for a list that has already settled, so without this a
+ * navigation made mid-fetch would be left ungrouped.
+ */
+let pending = false;
 /** Signature of the row set we last grouped, so navigations re-run but our own edits do not. */
 let lastSignature = "";
 
 async function apply(): Promise<void> {
-	if (applying) return;
+	if (applying) {
+		pending = true;
+		return;
+	}
 
 	const signature = pageSignature();
 	if (!signature || signature === lastSignature) return;
@@ -419,11 +428,19 @@ async function apply(): Promise<void> {
 			remoteHarvest.rows.map((entry) => [entry.number, entry]),
 		);
 
+		// The fetched refs describe the list this run started on; applying them to
+		// a list the user has since navigated to would regroup the wrong rows.
+		if (pageSignature() !== signature) return;
+
 		injectStyle();
 		reorder(buildStacks([...localRefs, ...remoteHarvest.refs]), remote);
 		lastSignature = pageSignature();
 	} finally {
 		applying = false;
+		if (pending) {
+			pending = false;
+			void apply();
+		}
 	}
 }
 
