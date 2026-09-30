@@ -13,8 +13,7 @@ description: |
 ```
 ~/Desktop/chrome-extensions/
 ├── extensions/
-│   ├── uncheck-viewed/   # GitHub PR の Viewed を一括解除
-│   └── copy-tweet/       # ツイートをMarkdownでコピー
+│   └── uncheck-viewed/   # GitHub PR の Viewed を一括解除
 └── biome.json
 ```
 
@@ -47,8 +46,3 @@ npm run build # ビルド + ~/.chrome/extensions/{name}/ へ自動コピー
 - **機能**: Files Changed タブで「Uncheck All Viewed」ボタンを挿入
 - **対応UI**: new experience（`ViewedFileProgress`）と classic view（`.diffbar-item`）の両方
 - **SPA対応**: URL変化を検知して1秒後・2秒後にリトライ
-
-### copy-tweet
-
-- **対象**: X（Twitter）
-- **機能**: ツイート・記事をMarkdown形式でコピー
