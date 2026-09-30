@@ -41,6 +41,8 @@ After building, load the extension in Chrome:
 2. Enable **Developer mode**
 3. Click **Load unpacked** and select `extensions/<extension-name>/.output/chrome-mv3`
 
+To check whether the extensions still work against GitHub's current markup, open a PR list or a PR's Files tab and paste the output of `node scripts/check.mjs` into DevTools. Each extension's own check lives in `extensions/<name>/check.js`; add one when creating a new extension.
+
 ## License
 
 [MIT](./LICENSE)

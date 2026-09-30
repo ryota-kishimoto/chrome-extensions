@@ -38,6 +38,12 @@ npm run build # ビルド + ~/.chrome/extensions/{name}/ へ自動コピー
 
 ビルド・リロード後はブラウザ操作で確認する（chrome-browser-automation スキル参照）。
 
+対象ページ（PR 一覧 / PR の Files タブ）を開き、`node scripts/check.mjs` の出力を Chrome MCP の `javascript_tool` で実行すると、拡張ごとに `markup`（GitHub 側の DOM が変わったか）と `injected`（拡張が動いたか）の結果が返る。`node scripts/check.mjs stack-pr` で1つだけ。
+
+## 新しい拡張を作るとき
+
+`extensions/{name}/check.js` を必ず置く（無いと `scripts/check.mjs` が警告する）。形式は既存の `extensions/stack-pr/check.js` を参照。拡張の `dom.ts` が読むセレクタを `markup`、拡張が差し込む UI を `injected` に書く。
+
 ## 各拡張機能のメモ
 
 ### uncheck-viewed
