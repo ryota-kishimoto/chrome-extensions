@@ -5,7 +5,6 @@
  */
 
 const CLASSIC_ROW_SELECTOR = 'div[id^="issue_"]';
-const NEW_ROW_SELECTOR = 'li[class*="PullsListItem-module__listItem"]';
 
 const STACK_ICON_SELECTOR = ".octicon-stack";
 const CLASSIC_TITLE_SELECTOR =
@@ -15,16 +14,19 @@ const NEW_TITLE_SELECTOR = '[data-testid="listitem-title-link"]';
 const CLASSIC_PAGE_LINK_SELECTOR = '.paginate-container a[href*="page="]';
 const NEW_PAGE_LINK_SELECTOR = 'nav[aria-label="Pagination"] a[href*="page="]';
 
-export function isNewList(root: ParentNode = document): boolean {
-	return root.querySelector(NEW_ROW_SELECTOR) !== null;
-}
-
-export function rowSelector(root: ParentNode = document): string {
-	return isNewList(root) ? NEW_ROW_SELECTOR : CLASSIC_ROW_SELECTOR;
-}
-
+/**
+ * The new list's row is found from its title link rather than by selecting the
+ * row: its class names are CSS-module hashes that change between deploys,
+ * while `data-testid` is stable.
+ */
 export function listRows(root: ParentNode = document): HTMLElement[] {
-	return [...root.querySelectorAll<HTMLElement>(rowSelector(root))];
+	const classic = root.querySelectorAll<HTMLElement>(CLASSIC_ROW_SELECTOR);
+	if (classic.length > 0) return [...classic];
+
+	return [...root.querySelectorAll(NEW_TITLE_SELECTOR)].flatMap((link) => {
+		const row = link.closest<HTMLElement>("li");
+		return row ? [row] : [];
+	});
 }
 
 /** The row's PR number, or null when the row isn't one we can identify. */
