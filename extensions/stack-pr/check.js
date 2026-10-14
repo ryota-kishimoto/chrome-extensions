@@ -2,10 +2,12 @@
 ({
 	applies: (url) => /^\/[^/]+\/[^/]+\/pulls$/.test(url.pathname),
 	async run({ $$, waitFor }) {
-		const ROW =
-			'div[id^="issue_"], li[class*="PullsListItem-module__listItem"]';
-		await waitFor(() => $$(ROW).length > 0);
-		const rows = $$(ROW);
+		const TITLE =
+			'a[id^="issue_"][data-hovercard-type="pull_request"], [data-testid="listitem-title-link"]';
+		await waitFor(() => $$(TITLE).length > 0);
+		const rows = $$(TITLE)
+			.map((link) => link.closest('div[id^="issue_"], li'))
+			.filter((row) => row !== null);
 		const stacked = rows.filter((row) => row.querySelector(".octicon-stack"));
 		return {
 			markup: {
